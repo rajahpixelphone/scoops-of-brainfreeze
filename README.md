@@ -19,54 +19,52 @@ It is designed to help 3rd-year BE CSE students understand real-world security v
 
 ---
 
-## Current Status (Updated)
+## Current Status
 
 | Deliverable | Status | Notes |
 |-------------|--------|-------|
-| Documentation | **Done** | Full architecture + OWASP Top 10 mapping with Mermaid diagrams |
-| Domain Models | **Done** | Flavor, User, Order |
-| Repositories | **Done** | Including intentional vulnerable queries |
-| AuthController | **Done** | Weak authentication (plain text passwords, no rate limiting) |
+| Documentation | **Done** | Full architecture + OWASP Top 10 mapping with Mermaid |
+| Domain Models | **Done** | Flavor, User, Order, Review |
+| AuthController | **Done** | Weak authentication |
 | FlavorController | **Done** | SQL Injection in search |
-| OrderController | **Done** | IDOR + negative quantity business logic flaw |
-| TDD Tests | **In Progress** | Tests documenting vulnerable behavior |
-| Sample Data | **Done** | Flavors + admin/student users |
-| React Frontend | Skeleton | Pending pages |
+| OrderController | **Done** | IDOR + negative quantity |
+| ReviewController | **Done** | Stored XSS (no sanitization) |
+| TDD Tests | **Good coverage** | Tests documenting vulnerable behavior |
+| Sample Data | **Done** | Flavors + users |
+| React Frontend | Skeleton | Next major focus |
 | Slidev Presentation | Started | Basic structure |
 
 ---
 
-## Default Credentials (for demos)
+## Working Vulnerable Features
+
+| OWASP | Feature | Endpoint |
+|-------|---------|----------|
+| A05 Injection | SQL Injection | `GET /api/flavors/search?q=` |
+| A05 Injection | Stored XSS | `POST /api/reviews` |
+| A01 Broken Access Control | IDOR | `GET/PUT /api/orders/{id}` |
+| A07 Authentication Failures | Weak Login | `POST /api/auth/login` |
+| A06 Insecure Design | Negative Quantity | `POST /api/orders` |
+| A04 Cryptographic Failures | Plain text passwords | User storage |
+| A02 Security Misconfiguration | Open CORS + verbose errors | Global |
+
+---
+
+## Default Credentials
 
 - **Admin:** `admin` / `softserve123`
 - **Student:** `student` / `password`
 
 ---
 
-## Important Disclaimer
-
-This application is **intentionally vulnerable**.  
-It is created purely for educational purposes.  
-
-**Do not** deploy it on the public internet without proper isolation and access controls.
-
----
-
-## Quick Links
-
-- [Architecture & Vulnerabilities Documentation](docs/ARCHITECTURE_AND_VULNERABILITIES.md)
-- [Slidev Presentation](slides/slides.md)
-
----
-
-## How to Run (Backend)
+## How to Run
 
 ```bash
 cd backend
 ./mvnw spring-boot:run
 ```
 
-API will be available at `http://localhost:8080`
+API base: `http://localhost:8080`
 
 ---
 
