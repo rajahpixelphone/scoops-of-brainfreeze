@@ -19,16 +19,27 @@ It is designed to help 3rd-year BE CSE students understand real-world security v
 
 ---
 
-## Current Status
+## Current Status (Updated)
 
 | Deliverable | Status | Notes |
 |-------------|--------|-------|
 | Documentation | **Done** | Full architecture + OWASP Top 10 mapping with Mermaid diagrams |
-| Backend Skeleton | **In Progress** | Spring Boot project + intentional misconfigurations |
-| Frontend Skeleton | **In Progress** | React + Vite setup |
-| Slidev Presentation | **Started** | Basic structure + quiz placeholders |
-| Docker Support | **Started** | docker-compose.yml added |
-| Full Vulnerable Features | Planned | Next phase |
+| Domain Models | **Done** | Flavor, User, Order |
+| Repositories | **Done** | Including intentional vulnerable queries |
+| AuthController | **Done** | Weak authentication (plain text passwords, no rate limiting) |
+| FlavorController | **Done** | SQL Injection in search |
+| OrderController | **Done** | IDOR + negative quantity business logic flaw |
+| TDD Tests | **In Progress** | Tests documenting vulnerable behavior |
+| Sample Data | **Done** | Flavors + admin/student users |
+| React Frontend | Skeleton | Pending pages |
+| Slidev Presentation | Started | Basic structure |
+
+---
+
+## Default Credentials (for demos)
+
+- **Admin:** `admin` / `softserve123`
+- **Student:** `student` / `password`
 
 ---
 
@@ -48,32 +59,14 @@ It is created purely for educational purposes.
 
 ---
 
-## Repository Structure
+## How to Run (Backend)
 
-```
-scoops-of-brainfreeze/
-├── backend/                 # Spring Boot application
-├── frontend/                # React application
-├── docs/                    # Full documentation + Mermaid diagrams
-├── slides/                  # Slidev presentation
-├── docker-compose.yml
-└── README.md
+```bash
+cd backend
+./mvnw spring-boot:run
 ```
 
----
-
-## Development Approach
-
-We follow **Test-Driven Development (TDD)** where practical, especially for:
-- Backend business logic
-- Security-related test cases (to demonstrate both vulnerable and fixed versions)
-
----
-
-## License
-
-Educational use only.  
-Not intended for production use.
+API will be available at `http://localhost:8080`
 
 ---
 
