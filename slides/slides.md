@@ -3,6 +3,11 @@ theme: default
 title: Scoops of Brainfreeze
 addons:
   - slidev-addon-slide-quiz
+slideQuiz:
+  quizGroupId: scoops-brainfreeze-jit
+  # After running `npx create-slide-quiz` or configuring AnyCable, set:
+  # wsUrl: wss://your-cable.anycable.io/cable
+  # quizUrl: /quiz.html
 ---
 
 # 🍦 Scoops of Brainfreeze
@@ -128,13 +133,12 @@ Refresh the page → the script runs.
 
 # Demo 3 – IDOR (Broken Access Control)
 
-**Page:** Orders
+**Page:** Orders + Admin API
 
-- Create an order (or use existing ID)
-- Change the order ID in the request
-- You can view **any** customer’s order
+- Change the order ID → view any order
+- Call `/api/admin/users` or `/api/admin/stats` with no auth
 
-No ownership check.
+No ownership or role checks.
 
 ---
 
@@ -154,40 +158,46 @@ Problems:
 
 ---
 
-# Quiz 1 🎯
+# Demo 5 – Insecure File Upload (A08)
 
-**What does IDOR stand for?**
+**Endpoint:** `POST /api/upload`
 
-- [ ] Insecure Direct Object Reference
-- [ ] Internal Data Object Routing
-- [ ] Identity Domain Ownership Rule
-
-<!-- Correct: Insecure Direct Object Reference -->
+- No file type validation
+- No extension whitelist
+- Files stored with original name influence
 
 ---
 
-# Quiz 2 🎯
-
-**Which vulnerability allows an attacker to run JavaScript in another user’s browser?**
-
-- [ ] SQL Injection
-- [ ] Stored XSS
-- [ ] IDOR
-- [ ] CSRF
-
-<!-- Correct: Stored XSS -->
-
+---
+layout: quiz
+quizId: q1
+question: What does IDOR stand for?
+options:
+  - { label: A, text: Insecure Direct Object Reference, correct: true }
+  - { label: B, text: Internal Data Object Routing }
+  - { label: C, text: Identity Domain Ownership Rule }
 ---
 
-# Quiz 3 🎯
+---
+layout: quiz
+quizId: q2
+question: Which vulnerability allows an attacker to run JavaScript in another user’s browser?
+options:
+  - { label: A, text: SQL Injection }
+  - { label: B, text: Stored XSS, correct: true }
+  - { label: C, text: IDOR }
+  - { label: D, text: CSRF }
+---
 
-**Why are plain text passwords dangerous?**
-
-- [ ] They take more storage space
-- [ ] If the database is leaked, attackers can use the passwords directly
-- [ ] They make login slower
-
-<!-- Correct: If the database is leaked... -->
+---
+layout: quiz
+quizId: q3
+question: Why are plain text passwords dangerous?
+options:
+  - { label: A, text: They take more storage space }
+  - { label: B, text: If the database is leaked, attackers can use the passwords directly, correct: true }
+  - { label: C, text: They make login slower }
+---
 
 ---
 
@@ -202,14 +212,17 @@ Problems:
 - Use a proper sanitizer
 - Content Security Policy (CSP)
 
-### IDOR
-- Always verify ownership
+### IDOR / Admin Access
+- Always verify ownership and roles
 - Never trust user-supplied IDs alone
 
 ### Authentication
 - Hash passwords (BCrypt / Argon2)
 - Add rate limiting
-- Use proper session / JWT handling
+
+### File Upload
+- Whitelist extensions + validate content type
+- Store outside web root
 
 ---
 
@@ -242,4 +255,7 @@ Feel free to explore the application and try breaking it further.
 
 Can you find more vulnerabilities in Scoops of Brainfreeze?
 
-(There are still a few more waiting...)
+Try:
+- `/api/admin/users`
+- `/api/admin/stats`
+- File upload endpoint
