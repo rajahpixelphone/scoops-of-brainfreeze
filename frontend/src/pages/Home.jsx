@@ -1,16 +1,20 @@
 import { useEffect, useState } from 'react'
-
-const API = 'http://localhost:8080/api'
+import { apiGet } from '../api'
 
 function Home() {
   const [flavors, setFlavors] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
-    fetch(`${API}/flavors`)
-      .then(res => res.json())
+    apiGet('/flavors')
       .then(data => setFlavors(data))
-      .catch(err => console.error(err))
+      .catch(err => setError(err.message))
+      .finally(() => setLoading(false))
   }, [])
+
+  if (loading) return <p>Loading flavors...</p>
+  if (error) return <p style={{ color: 'red' }}>Error: {error}</p>
 
   return (
     <div>
