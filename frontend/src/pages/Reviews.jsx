@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react'
-
-const API = 'http://localhost:8080/api'
+import { apiGet, apiPost } from '../api'
 
 function Reviews() {
   const [reviews, setReviews] = useState([])
   const [authorName, setAuthorName] = useState('')
   const [comment, setComment] = useState('')
   const [rating, setRating] = useState(5)
+  const [loading, setLoading] = useState(true)
 
   const loadReviews = () => {
-    fetch(`${API}/reviews`)
-      .then(res => res.json())
+    apiGet('/reviews')
       .then(data => setReviews(data))
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false))
   }
 
   useEffect(() => {
@@ -20,19 +21,19 @@ function Reviews() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    await fetch(`${API}/reviews`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    try {
+      await apiPost('/reviews', {
         flavorId: 1,
         authorName,
         comment,
         rating: Number(rating)
       })
-    })
-    setComment('')
-    setAuthorName('')
-    loadReviews()
+      setComment('')
+      setAuthorName('')
+      loadReviews()
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   return (
@@ -67,7 +68,7 @@ function Reviews() {
       </form>
 
       <h3>All Reviews</h3>
-      {reviews.map(r => (
+      {loading ? <p>Loading...</p> : reviews.map(r => (
         <div key={r.id} className="card">
           <strong>{r.authorName}</strong> – {r.rating}/5
           {/* Intentionally dangerous: rendering HTML directly for XSS demo */}
