@@ -1,18 +1,19 @@
 import { useState } from 'react'
-
-const API = 'http://localhost:8080/api'
+import { API_BASE } from '../api'
 
 function Orders() {
   const [orderId, setOrderId] = useState('')
   const [order, setOrder] = useState(null)
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const fetchOrder = async (e) => {
     e.preventDefault()
     setError('')
     setOrder(null)
+    setLoading(true)
     try {
-      const res = await fetch(`${API}/orders/${orderId}`)
+      const res = await fetch(`${API_BASE}/orders/${orderId}`)
       if (!res.ok) {
         setError('Order not found')
         return
@@ -21,6 +22,8 @@ function Orders() {
       setOrder(data)
     } catch (err) {
       setError('Failed to fetch order')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -38,7 +41,9 @@ function Orders() {
           value={orderId}
           onChange={(e) => setOrderId(e.target.value)}
         />
-        <button type="submit" className="btn">Fetch Order</button>
+        <button type="submit" className="btn" disabled={loading}>
+          {loading ? 'Loading...' : 'Fetch Order'}
+        </button>
       </form>
 
       {error && <div className="card" style={{ color: 'red' }}>{error}</div>}
