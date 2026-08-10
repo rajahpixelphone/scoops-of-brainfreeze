@@ -154,26 +154,40 @@ Problems:
 
 ---
 
-# Quick Quiz Time 🎯
+# Quiz 1 🎯
 
-<!-- slidev-addon-slide-quiz will be used here -->
+**What does IDOR stand for?**
 
-**Question:** What does IDOR stand for?
+- [ ] Insecure Direct Object Reference
+- [ ] Internal Data Object Routing
+- [ ] Identity Domain Ownership Rule
 
-A) Insecure Direct Object Reference  
-B) Internal Data Object Routing  
-C) Identity Domain Ownership Rule
+<!-- Correct: Insecure Direct Object Reference -->
 
 ---
 
-# Another Quiz
+# Quiz 2 🎯
 
 **Which vulnerability allows an attacker to run JavaScript in another user’s browser?**
 
-A) SQL Injection  
-B) Stored XSS  
-C) IDOR  
-D) CSRF
+- [ ] SQL Injection
+- [ ] Stored XSS
+- [ ] IDOR
+- [ ] CSRF
+
+<!-- Correct: Stored XSS -->
+
+---
+
+# Quiz 3 🎯
+
+**Why are plain text passwords dangerous?**
+
+- [ ] They take more storage space
+- [ ] If the database is leaked, attackers can use the passwords directly
+- [ ] They make login slower
+
+<!-- Correct: If the database is leaked... -->
 
 ---
 
