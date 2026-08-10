@@ -1,22 +1,28 @@
 import { useState } from 'react'
-
-const API = 'http://localhost:8080/api'
+import { API_BASE } from '../api'
 
 function Search() {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState([])
   const [searched, setSearched] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const handleSearch = async (e) => {
     e.preventDefault()
     setSearched(true)
+    setLoading(true)
+    setError('')
     try {
-      const res = await fetch(`${API}/flavors/search?q=${encodeURIComponent(query)}`)
+      const res = await fetch(`${API_BASE}/flavors/search?q=${encodeURIComponent(query)}`)
+      if (!res.ok) throw new Error('Search failed')
       const data = await res.json()
       setResults(data)
     } catch (err) {
-      console.error(err)
+      setError(err.message)
       setResults([])
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -34,10 +40,14 @@ function Search() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
-        <button type="submit" className="btn">Search</button>
+        <button type="submit" className="btn" disabled={loading}>
+          {loading ? 'Searching...' : 'Search'}
+        </button>
       </form>
 
-      {searched && (
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
+      {searched && !loading && (
         <div>
           <h3>Results ({results.length})</h3>
           {results.length === 0 ? (
