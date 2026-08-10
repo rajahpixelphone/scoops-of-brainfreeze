@@ -14,57 +14,61 @@ It is designed to help 3rd-year BE CSE students understand real-world security v
 
 ### Tech Stack
 - **Backend:** Spring Boot
-- **Frontend:** React
+- **Frontend:** React + Vite
 - **Presentation:** Slidev (with live quiz addon)
 
 ---
 
 ## Current Status
 
-| Deliverable | Status | Notes |
-|-------------|--------|-------|
-| Documentation | **Done** | Full architecture + OWASP Top 10 mapping with Mermaid |
-| Domain Models | **Done** | Flavor, User, Order, Review |
-| AuthController | **Done** | Weak authentication |
-| FlavorController | **Done** | SQL Injection in search |
-| OrderController | **Done** | IDOR + negative quantity |
-| ReviewController | **Done** | Stored XSS (no sanitization) |
-| TDD Tests | **Good coverage** | Tests documenting vulnerable behavior |
-| Sample Data | **Done** | Flavors + users |
-| React Frontend | Skeleton | Next major focus |
-| Slidev Presentation | Started | Basic structure |
+| Component | Status |
+|-----------|--------|
+| Documentation | Done |
+| Backend (Vulnerable APIs) | Done |
+| React Frontend | **Done (basic pages)** |
+| TDD Tests | Good coverage |
+| Slidev Presentation | Started |
 
 ---
 
-## Working Vulnerable Features
+## Working Demo Features
 
-| OWASP | Feature | Endpoint |
-|-------|---------|----------|
-| A05 Injection | SQL Injection | `GET /api/flavors/search?q=` |
-| A05 Injection | Stored XSS | `POST /api/reviews` |
-| A01 Broken Access Control | IDOR | `GET/PUT /api/orders/{id}` |
-| A07 Authentication Failures | Weak Login | `POST /api/auth/login` |
-| A06 Insecure Design | Negative Quantity | `POST /api/orders` |
-| A04 Cryptographic Failures | Plain text passwords | User storage |
-| A02 Security Misconfiguration | Open CORS + verbose errors | Global |
-
----
-
-## Default Credentials
-
-- **Admin:** `admin` / `softserve123`
-- **Student:** `student` / `password`
+| Page | Vulnerability Demonstrated |
+|------|---------------------------|
+| `/search` | SQL Injection |
+| `/reviews` | Stored XSS |
+| `/orders` | IDOR (Broken Access Control) |
+| `/login` | Weak Authentication |
 
 ---
 
 ## How to Run
 
+### Backend
 ```bash
 cd backend
 ./mvnw spring-boot:run
 ```
+→ http://localhost:8080
 
-API base: `http://localhost:8080`
+### Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
+→ http://localhost:3000
+
+### Default Credentials
+- Admin: `admin` / `softserve123`
+- Student: `student` / `password`
+
+---
+
+## Important Disclaimer
+
+This application is **intentionally vulnerable**.  
+Use only in controlled educational environments.
 
 ---
 
