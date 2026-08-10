@@ -1,6 +1,5 @@
 import { useState } from 'react'
-
-const API = 'http://localhost:8080/api'
+import { apiPost } from '../api'
 
 function Login() {
   const [username, setUsername] = useState('')
@@ -10,12 +9,7 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault()
     try {
-      const res = await fetch(`${API}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      })
-      const data = await res.json()
+      const data = await apiPost('/auth/login', { username, password })
       if (data.success) {
         setMessage(`Welcome ${data.fullName}! Role: ${data.role}`)
         localStorage.setItem('user', JSON.stringify(data))
