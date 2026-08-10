@@ -19,14 +19,16 @@ It is designed to help 3rd-year BE CSE students understand real-world security v
 
 ---
 
-## Deliverables
+## Current Status
 
-| Deliverable | Status | Description |
-|-------------|--------|-------------|
-| Vulnerable Web App | In Progress | Spring Boot + React ice cream shop with OWASP Top 10:2025 flaws |
-| Documentation | Planned | Architecture, Mermaid diagrams, vulnerability explanations, fixes |
-| Slidev Presentation | Planned | Interactive slides with live quizzes (`slidev-addon-slide-quiz`) |
-| Deployment Guides | Planned | Local, Docker, AWS, GCP |
+| Deliverable | Status | Notes |
+|-------------|--------|-------|
+| Documentation | **Done** | Full architecture + OWASP Top 10 mapping with Mermaid diagrams |
+| Backend Skeleton | **In Progress** | Spring Boot project + intentional misconfigurations |
+| Frontend Skeleton | **In Progress** | React + Vite setup |
+| Slidev Presentation | **Started** | Basic structure + quiz placeholders |
+| Docker Support | **Started** | docker-compose.yml added |
+| Full Vulnerable Features | Planned | Next phase |
 
 ---
 
@@ -39,7 +41,14 @@ It is created purely for educational purposes.
 
 ---
 
-## Repository Structure (Planned)
+## Quick Links
+
+- [Architecture & Vulnerabilities Documentation](docs/ARCHITECTURE_AND_VULNERABILITIES.md)
+- [Slidev Presentation](slides/slides.md)
+
+---
+
+## Repository Structure
 
 ```
 scoops-of-brainfreeze/
@@ -47,7 +56,7 @@ scoops-of-brainfreeze/
 ├── frontend/                # React application
 ├── docs/                    # Full documentation + Mermaid diagrams
 ├── slides/                  # Slidev presentation
-├── docker/                  # Docker & docker-compose files
+├── docker-compose.yml
 └── README.md
 ```
 
@@ -55,7 +64,7 @@ scoops-of-brainfreeze/
 
 ## Development Approach
 
-We will follow **Test-Driven Development (TDD)** where practical, especially for:
+We follow **Test-Driven Development (TDD)** where practical, especially for:
 - Backend business logic
 - Security-related test cases (to demonstrate both vulnerable and fixed versions)
 
