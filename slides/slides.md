@@ -5,89 +5,227 @@ addons:
   - slidev-addon-slide-quiz
 ---
 
-# Scoops of Brainfreeze
+# 🍦 Scoops of Brainfreeze
 
 ### Teaching OWASP Top 10:2025 with Ice Cream
 
-A deliberately vulnerable application for 3rd Year BE CSE students
+**Guest Lecture**  
+Jansons Institute of Technology  
+3rd Year BE CSE
+
+---
+
+# About Today
+
+- Duration: ~60 minutes
+- Style: Live demos + interactive quizzes
+- Goal: Understand real vulnerabilities through a fun application
 
 ---
 
 # Agenda
 
 1. Why this application?
-2. Quick tour of Scoops of Brainfreeze
-3. OWASP Top 10:2025 – Live Demos
-4. Interactive Quizzes
+2. Quick architecture tour
+3. Live attacks on Scoops of Brainfreeze
+4. Interactive quizzes
 5. How to fix the issues
-6. Q&A
+6. Key takeaways + Q&A
 
 ---
 
-# Why Ice Cream?
+# Why an Ice Cream Shop?
 
-- Relatable
-- Funny
-- Memorable
-- Students remember "SQL Injection while searching for Chocolate Chip" much better than abstract examples
+- Highly relatable
+- Naturally funny
+- Makes vulnerabilities memorable
+
+> Students remember  
+> “SQL Injection while searching for Chocolate Chip”  
+> much better than abstract theory.
 
 ---
 
-# Architecture Overview
+# The Application
 
-```mermaid
-flowchart LR
-    React --> SpringBoot --> Database
-```
+**Scoops of Brainfreeze**
 
 - Frontend: React
 - Backend: Spring Boot
 - Intentionally vulnerable by design
 
+Repo: https://github.com/rajahpixelphone/scoops-of-brainfreeze
+
 ---
 
-# Live Demo Time
+# Architecture
+
+```mermaid
+flowchart LR
+    A[React Frontend] --> B[Spring Boot API]
+    B --> C[(H2 Database)]
+```
+
+Simple. Clear. Perfect for demos.
+
+---
+
+# Live Demo Time 🔥
 
 We will now attack our own ice cream shop.
 
----
-
-# Quiz 1 – Warm up
-
-<!-- Add slidev-addon-slide-quiz here later -->
-
-**What does IDOR stand for?**
+Open: http://localhost:3000
 
 ---
 
-# A01 – Broken Access Control
+# Demo 1 – SQL Injection
 
-- View any customer’s order by changing the ID
-- Access admin features as a normal user
+**Page:** Search Flavors
 
----
+**Try this payload:**
 
-# A05 – Injection
+```
+' OR '1'='1
+```
 
-- SQL Injection in the flavor search
-- Stored XSS in reviews
-
----
-
-# More vulnerabilities coming...
-
-(A02, A04, A06, A07, A08, A09, A10)
+What happens?
 
 ---
 
-# How to Fix
+# Why did that work?
 
-We will look at practical fixes for each issue after the demos.
+Vulnerable native query:
+
+```sql
+SELECT * FROM flavors WHERE name LIKE %:keyword%
+```
+
+No proper parameterization in the vulnerable version.
 
 ---
 
-# Thank You
+# Demo 2 – Stored XSS
+
+**Page:** Reviews
+
+**Try this comment:**
+
+```html
+<script>alert('XSS from Ice Cream')</script>
+```
+
+Refresh the page → the script runs.
+
+---
+
+# Why is this dangerous?
+
+- Stored in the database
+- Rendered without sanitization
+- Affects every user who views the reviews
+
+---
+
+# Demo 3 – IDOR (Broken Access Control)
+
+**Page:** Orders
+
+- Create an order (or use existing ID)
+- Change the order ID in the request
+- You can view **any** customer’s order
+
+No ownership check.
+
+---
+
+# Demo 4 – Weak Authentication
+
+**Page:** Login
+
+Default credentials:
+
+- `admin` / `softserve123`
+- `student` / `password`
+
+Problems:
+- Plain text passwords
+- No rate limiting
+- Predictable accounts
+
+---
+
+# Quick Quiz Time 🎯
+
+<!-- slidev-addon-slide-quiz will be used here -->
+
+**Question:** What does IDOR stand for?
+
+A) Insecure Direct Object Reference  
+B) Internal Data Object Routing  
+C) Identity Domain Ownership Rule
+
+---
+
+# Another Quiz
+
+**Which vulnerability allows an attacker to run JavaScript in another user’s browser?**
+
+A) SQL Injection  
+B) Stored XSS  
+C) IDOR  
+D) CSRF
+
+---
+
+# How Do We Fix These?
+
+### SQL Injection
+- Always use parameterized queries / prepared statements
+- Prefer JPA method names or Criteria API
+
+### Stored XSS
+- Encode output
+- Use a proper sanitizer
+- Content Security Policy (CSP)
+
+### IDOR
+- Always verify ownership
+- Never trust user-supplied IDs alone
+
+### Authentication
+- Hash passwords (BCrypt / Argon2)
+- Add rate limiting
+- Use proper session / JWT handling
+
+---
+
+# Key Takeaways
+
+1. Security is not optional
+2. Never trust user input
+3. Simple mistakes create serious vulnerabilities
+4. Understanding attacks helps you write better code
+
+---
+
+# Resources
+
+- OWASP Top 10: https://owasp.org/Top10/
+- Project Repo: https://github.com/rajahpixelphone/scoops-of-brainfreeze
+- Documentation inside the repo (`docs/`)
+
+---
+
+# Thank You!
 
 **Questions?**
 
-Repo: https://github.com/rajahpixelphone/scoops-of-brainfreeze
+Feel free to explore the application and try breaking it further.
+
+---
+
+# Bonus Challenge
+
+Can you find more vulnerabilities in Scoops of Brainfreeze?
+
+(There are still a few more waiting...)
