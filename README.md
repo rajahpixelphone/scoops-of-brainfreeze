@@ -3,55 +3,32 @@
 > Deliberately Vulnerable Ice Cream Shop  
 > Educational project for teaching **OWASP Top 10:2025**
 
-**Public Repository** | Created for guest lecture at Jansons Institute of Technology (Coimbatore)
+**Public Repository** | Guest Lecture – Jansons Institute of Technology
 
 ---
 
-## Project Overview
-
-**Scoops of Brainfreeze** is a fun, intentionally vulnerable web application themed as an ice cream shop.  
-It is designed to help 3rd-year BE CSE students understand real-world security vulnerabilities in a relatable and memorable way.
-
-### Tech Stack
-- **Backend:** Spring Boot
-- **Frontend:** React + Vite
-- **Presentation:** Slidev (with live quiz addon)
-
----
-
-## Current Status
+## Project Status: Ready for Lecture
 
 | Component | Status |
 |-----------|--------|
-| Documentation | Done |
-| Backend (Vulnerable APIs) | Done |
-| React Frontend | **Done (basic pages)** |
-| TDD Tests | Good coverage |
-| Slidev Presentation | Started |
+| Documentation | ✅ Done |
+| Backend (Vulnerable APIs) | ✅ Done |
+| React Frontend | ✅ Done |
+| TDD Tests | ✅ Good coverage |
+| Slidev Presentation | ✅ Expanded |
 
 ---
 
-## Working Demo Features
+## How to Run the Full Demo
 
-| Page | Vulnerability Demonstrated |
-|------|---------------------------|
-| `/search` | SQL Injection |
-| `/reviews` | Stored XSS |
-| `/orders` | IDOR (Broken Access Control) |
-| `/login` | Weak Authentication |
-
----
-
-## How to Run
-
-### Backend
+### 1. Backend
 ```bash
 cd backend
 ./mvnw spring-boot:run
 ```
 → http://localhost:8080
 
-### Frontend
+### 2. Frontend
 ```bash
 cd frontend
 npm install
@@ -59,9 +36,30 @@ npm run dev
 ```
 → http://localhost:3000
 
-### Default Credentials
-- Admin: `admin` / `softserve123`
-- Student: `student` / `password`
+### 3. Presentation (Slidev)
+```bash
+cd slides
+npm install
+npm run dev
+```
+
+---
+
+## Default Credentials
+
+- **Admin:** `admin` / `softserve123`
+- **Student:** `student` / `password`
+
+---
+
+## Demo Features Available
+
+| Page | Vulnerability |
+|------|---------------|
+| Search | SQL Injection |
+| Reviews | Stored XSS |
+| Orders | IDOR |
+| Login | Weak Authentication |
 
 ---
 
