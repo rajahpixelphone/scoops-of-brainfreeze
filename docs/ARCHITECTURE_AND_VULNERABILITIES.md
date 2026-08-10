@@ -16,216 +16,117 @@ flowchart TB
 
     subgraph Server["Server Layer"]
         S[Spring Boot Backend<br/>REST APIs]
-        A[Authentication<br/>JWT / Session]
+        A[Authentication<br/>Weak / Plain Text]
         B[Business Logic<br/>Orders, Flavors, Reviews]
     end
 
     subgraph Data["Data Layer"]
-        DB[(H2 / PostgreSQL)]
-        FS[File Storage<br/>Profile Pictures / Cone Designs]
+        DB[(H2 In-Memory Database)]
     end
 
     R -->|HTTP/JSON| S
     S --> A
     S --> B
     B --> DB
-    B --> FS
 ```
 
 ---
 
-## 2. Application Features
+## 2. Currently Implemented Features
 
-| Feature | Description | Primary Vulnerability Opportunity |
-|---------|-------------|-----------------------------------|
+| Feature | Description | Vulnerability Demonstrated |
+|---------|-------------|----------------------------|
 | Home / Menu | List of ice cream flavors | - |
-| User Registration & Login | Create account / Login | A07 Authentication Failures |
-| Place Order | Select flavor + quantity + notes | A05 Injection, A06 Insecure Design |
-| My Orders | View own orders | A01 Broken Access Control (IDOR) |
-| Reviews / Comments | Leave reviews on flavors | A05 Injection (Stored XSS / SQLi) |
-| Search Flavors | Search by name | A05 Injection |
-| Admin Dashboard | Manage orders, users, flavors | A01 Broken Access Control |
-| Profile + Photo Upload | Update profile & upload image | A08 Software/Data Integrity |
-| Contact / Feedback | Simple form | A10 Exception Handling |
+| User Login & Register | Create account / Login | A07 Authentication Failures, A04 Cryptographic Failures |
+| Search Flavors | Search by name | A05 SQL Injection |
+| Reviews | Leave and view reviews | A05 Stored XSS |
+| View Orders by ID | Fetch any order | A01 Broken Access Control (IDOR) |
+| Create Order | Place order with quantity | A06 Insecure Design (negative quantity) |
+| Global Error Handling | Exception responses | A10 Mishandling of Exceptional Conditions |
+| Security Configuration | CORS, CSRF, authorization | A02 Security Misconfiguration |
+
+> **Note:** Admin Dashboard, File Upload (A08), and advanced logging (A09) are documented as teaching concepts but are **not yet implemented** in the current codebase.
 
 ---
 
 ## 3. OWASP Top 10:2025 Vulnerability Mapping
 
-### A01:2025 – Broken Access Control
+### A01:2025 – Broken Access Control ✅ Implemented
 
-**Location:** Order details endpoint & Admin panel
+**Location:** `/api/orders/{id}`
 
 **Vulnerable Behavior:**
-- Any logged-in user can view/edit any order by changing the order ID in the URL (`/api/orders/123`)
-- Regular users can access `/admin` endpoints
-
-```mermaid
-sequenceDiagram
-    participant User as Regular User
-    participant App as Scoops App
-    participant DB as Database
-
-    User->>App: GET /api/orders/42 (belongs to another user)
-    App->>DB: SELECT * FROM orders WHERE id = 42
-    DB-->>App: Order data
-    App-->>User: Returns other user's order (IDOR)
-```
+- Any user can view or update any order by changing the ID
+- No ownership check
 
 **Possible Fixes:**
-- Always check that the order belongs to the current user
-- Use `@PreAuthorize` or method-level security
-- Implement proper ownership checks
+- Always verify the order belongs to the current user
+- Use method-level security (`@PreAuthorize`)
 
 ---
 
-### A02:2025 – Security Misconfiguration
+### A02:2025 – Security Misconfiguration ✅ Implemented
 
-**Location:** Application configuration & Error handling
+**Location:** `SecurityConfig` + `application.properties`
 
 **Vulnerable Behavior:**
-- Default admin credentials: `admin` / `softserve123`
-- Stack traces and detailed errors shown to users
-- Unnecessary endpoints enabled
-- CORS wide open
-
-**Possible Fixes:**
-- Change default credentials
-- Disable detailed error pages in production
-- Restrict CORS
-- Disable unused actuators / endpoints
+- CSRF disabled
+- CORS allows all origins
+- All endpoints are `permitAll()`
+- Verbose error messages and stack traces
 
 ---
 
-### A03:2025 – Software Supply Chain Failures
+### A04:2025 – Cryptographic Failures ✅ Implemented
 
-**Location:** Dependencies
+**Location:** User password storage
 
 **Vulnerable Behavior:**
-- Intentionally outdated libraries with known CVEs
-- No dependency scanning in CI
-
-**Possible Fixes:**
-- Keep dependencies updated
-- Use tools like OWASP Dependency-Check / Snyk
-- Pin versions and monitor advisories
+- Passwords stored and compared in plain text
 
 ---
 
-### A04:2025 – Cryptographic Failures
+### A05:2025 – Injection ✅ Implemented
 
-**Location:** Password storage & Tokens
-
-**Vulnerable Behavior:**
-- Passwords stored using MD5 (or plain text in early versions)
-- Weak JWT signing key
-- Sensitive data in logs
-
-**Possible Fixes:**
-- Use BCrypt / Argon2
-- Strong random keys for JWT
-- Never log sensitive data
+**SQL Injection** – `/api/flavors/search?q=`  
+**Stored XSS** – Reviews (`dangerouslySetInnerHTML` on frontend)
 
 ---
 
-### A05:2025 – Injection
+### A06:2025 – Insecure Design ✅ Implemented
 
-**Location:** Search, Reviews, Order notes
+**Location:** Order creation
 
 **Vulnerable Behavior:**
-- SQL Injection in flavor search (`/api/flavors/search?q=`)
-- Stored XSS in reviews
-
-```mermaid
-sequenceDiagram
-    participant Attacker
-    participant App
-    participant DB
-
-    Attacker->>App: GET /api/flavors/search?q=' OR '1'='1
-    App->>DB: SELECT * FROM flavors WHERE name LIKE '%' OR '1'='1%'
-    DB-->>App: All records returned
-    App-->>Attacker: Full flavor list (data leak)
-```
-
-**Possible Fixes:**
-- Use Prepared Statements / JPA properly
-- Input validation + output encoding
-- Content Security Policy (CSP)
+- Negative quantity is accepted and can produce negative totals
 
 ---
 
-### A06:2025 – Insecure Design
+### A07:2025 – Authentication Failures ✅ Implemented
 
-**Location:** Order quantity logic
+**Location:** `/api/auth/login`
 
 **Vulnerable Behavior:**
-- Negative quantity allowed → results in credit / free ice cream
-- No business rule validation on price calculation
-
-**Possible Fixes:**
-- Server-side validation of business rules
-- Never trust client-side calculations
+- No rate limiting
+- Plain text password comparison
+- Predictable default accounts
 
 ---
 
-### A07:2025 – Authentication Failures
+### A10:2025 – Mishandling of Exceptional Conditions ✅ Implemented
 
-**Location:** Login endpoint
+**Location:** `GlobalExceptionHandler`
 
 **Vulnerable Behavior:**
-- No rate limiting / account lockout
-- Weak password policy
-- Predictable session tokens in early versions
-
-**Possible Fixes:**
-- Implement rate limiting
-- Strong password policy
-- Secure session management
+- Full exception details and stack traces returned to the client
 
 ---
 
-### A08:2025 – Software or Data Integrity Failures
+### Not Yet Implemented (Teaching Concepts Only)
 
-**Location:** File upload (profile picture / custom cone design)
-
-**Vulnerable Behavior:**
-- Unrestricted file upload (any extension)
-- No content-type validation
-- Files stored in web-accessible directory
-
-**Possible Fixes:**
-- Whitelist allowed extensions
-- Validate content type + magic bytes
-- Store outside web root + serve via controlled endpoint
-
----
-
-### A09:2025 – Security Logging and Alerting Failures
-
-**Location:** Entire application
-
-**Vulnerable Behavior:**
-- No logging of failed logins, access control failures, or admin actions
-- No alerting mechanism
-
-**Possible Fixes:**
-- Log authentication events, authorization failures, and sensitive actions
-- Centralized logging + basic alerting
-
----
-
-### A10:2025 – Mishandling of Exceptional Conditions
-
-**Location:** Global exception handling
-
-**Vulnerable Behavior:**
-- Unhandled exceptions return full stack traces to the client
-- Application continues in inconsistent state after errors
-
-**Possible Fixes:**
-- Global exception handler that returns generic messages
-- Proper error recovery and logging
+- **A03** Software Supply Chain Failures
+- **A08** Software or Data Integrity Failures (File Upload)
+- **A09** Security Logging and Alerting Failures
 
 ---
 
@@ -235,7 +136,6 @@ sequenceDiagram
 - Java 17+
 - Node.js 18+
 - Maven
-- Docker (optional but recommended)
 
 ### Local Development
 
@@ -250,21 +150,23 @@ npm install
 npm run dev
 ```
 
-### Docker (Recommended for demos)
+- Backend: http://localhost:8080
+- Frontend: http://localhost:3000
 
-```bash
-docker-compose up --build
-```
+### Default Credentials
+
+- Admin: `admin` / `softserve123`
+- Student: `student` / `password`
 
 ---
 
 ## 5. How to Use in the Lecture
 
-1. Show the normal user flow (ordering ice cream)
+1. Show the normal user flow
 2. Demonstrate one vulnerability at a time
-3. Explain the root cause using the Mermaid diagrams
-4. Show the corresponding fix
-5. Use live quizzes (Slidev) between sections
+3. Explain the root cause
+4. Show the corresponding fix approach
+5. Use quizzes between sections
 
 ---
 
