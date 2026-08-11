@@ -52,21 +52,17 @@ npm run dev
 
 Embed the React frontend inside Spring Boot and deploy as a single AppSail service.
 
-**Quick steps:**
+**One-command build:**
 
 ```bash
-# 1. Build frontend and copy into Spring Boot
-cd frontend
-npm install && npm run build
-rm -rf ../backend/src/main/resources/static
-mkdir -p ../backend/src/main/resources/static
-cp -r dist/* ../backend/src/main/resources/static/
+chmod +x build-for-catalyst.sh
+./build-for-catalyst.sh
+```
 
-# 2. Build the JAR
-cd ../backend
-./mvnw clean package -DskipTests
+Then:
 
-# 3. Deploy with Catalyst CLI
+```bash
+cd backend
 catalyst deploy
 ```
 
