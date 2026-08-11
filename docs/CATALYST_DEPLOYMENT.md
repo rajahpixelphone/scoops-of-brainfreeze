@@ -14,39 +14,46 @@ This guide embeds the React frontend inside the Spring Boot JAR and deploys ever
 
 ---
 
-## 2. Build the React frontend into Spring Boot
+## 2. One-command build (Recommended)
+
+From the project root:
 
 ```bash
-# From project root
+chmod +x build-for-catalyst.sh
+./build-for-catalyst.sh
+```
+
+This script will:
+1. Build the React frontend
+2. Copy the production files into `backend/src/main/resources/static/`
+3. Build the Spring Boot JAR
+
+At the end it prints the JAR path.
+
+---
+
+## 3. Manual build (alternative)
+
+```bash
+# Frontend
 cd frontend
 npm install
 npm run build
 
-# Copy the production build into Spring Boot static resources
 rm -rf ../backend/src/main/resources/static
 mkdir -p ../backend/src/main/resources/static
 cp -r dist/* ../backend/src/main/resources/static/
-```
 
-After this step, Spring Boot will serve both the API and the React UI from the same origin.
-
----
-
-## 3. Build the Spring Boot JAR
-
-```bash
-cd backend
+# Backend
+cd ../backend
 ./mvnw clean package -DskipTests
 ```
-
-The JAR will be created at:
-`backend/target/brainfreeze-0.0.1-SNAPSHOT.jar`
 
 ---
 
 ## 4. Initialize AppSail (first time only)
 
-From the `backend` directory (or project root):
+From the `backend` directory:
 
 ```bash
 catalyst init
@@ -57,26 +64,18 @@ When prompted:
 - **Select AppSail**
 - **Stack**: Java 17 (or Java 21)
 - **Platform**: Java SE
-- **Build path**: point to the directory containing the JAR (usually `target/`)
+- **Build path**: `target/` (directory containing the JAR)
 
 ---
 
-## 5. Configure startup command
+## 5. Startup command
 
-AppSail needs the app to listen on `X_ZOHO_CATALYST_LISTEN_PORT`.
+The project already includes `ServerPortCustomizer.java` which reads `X_ZOHO_CATALYST_LISTEN_PORT`.
 
-The project already contains `ServerPortCustomizer.java` for this.
-
-Example startup command (adjust JAR name if needed):
+Typical startup command:
 
 ```bash
 java -jar brainfreeze-0.0.1-SNAPSHOT.jar
-```
-
-You can also set it explicitly:
-
-```bash
-java -jar brainfreeze-0.0.1-SNAPSHOT.jar --server.port=$X_ZOHO_CATALYST_LISTEN_PORT
 ```
 
 ---
@@ -84,10 +83,11 @@ java -jar brainfreeze-0.0.1-SNAPSHOT.jar --server.port=$X_ZOHO_CATALYST_LISTEN_P
 ## 6. Deploy
 
 ```bash
+cd backend
 catalyst deploy
 ```
 
-or specifically:
+or:
 
 ```bash
 catalyst deploy appsail
@@ -97,9 +97,20 @@ catalyst deploy appsail
 
 ## 7. Access the application
 
-After deployment, Catalyst will give you a public HTTPS URL.
+Catalyst will provide a public HTTPS URL.  
+Both the React UI and the API are served from the same origin.
 
-Open it in the browser — both the React UI and the API will be available from the same origin.
+---
+
+## Local verification before deploying
+
+```bash
+./build-for-catalyst.sh
+cd backend
+java -jar target/brainfreeze-0.0.1-SNAPSHOT.jar
+```
+
+Then open http://localhost:8080
 
 ---
 
@@ -108,18 +119,6 @@ Open it in the browser — both the React UI and the API will be available from 
 This application is **intentionally vulnerable**.
 
 - Do **not** leave it permanently public.
-- Prefer temporary demos or restrict access.
+- Prefer temporary demos only.
 - H2 database is in-memory → data resets on every restart.
 - File uploads are stored on ephemeral disk and will be lost on redeploy.
-
----
-
-## Local verification before deploying
-
-```bash
-# After copying the React build into static/
-cd backend
-./mvnw spring-boot:run
-```
-
-Then open http://localhost:8080 — you should see the full UI served by Spring Boot.
