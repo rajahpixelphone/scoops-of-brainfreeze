@@ -18,10 +18,11 @@
 | Slidev + Interactive Quizzes | ✅ Proper layout syntax |
 | Admin Panel (no auth) | ✅ Added |
 | File Upload (A08) | ✅ Added |
+| Zoho Catalyst (Option A) | ✅ Supported |
 
 ---
 
-## How to Run
+## How to Run (Local Development)
 
 ### Backend
 ```bash
@@ -30,7 +31,7 @@ cd backend
 ```
 → http://localhost:8080
 
-### Frontend
+### Frontend (separate)
 ```bash
 cd frontend
 npm install
@@ -45,7 +46,31 @@ npm install
 npm run dev
 ```
 
-> For full live quiz (QR + real-time results), run `npx create-slide-quiz` once and configure AnyCable as shown in the addon docs.
+---
+
+## Deploy on Zoho Catalyst (Option A – Recommended)
+
+Embed the React frontend inside Spring Boot and deploy as a single AppSail service.
+
+**Quick steps:**
+
+```bash
+# 1. Build frontend and copy into Spring Boot
+cd frontend
+npm install && npm run build
+rm -rf ../backend/src/main/resources/static
+mkdir -p ../backend/src/main/resources/static
+cp -r dist/* ../backend/src/main/resources/static/
+
+# 2. Build the JAR
+cd ../backend
+./mvnw clean package -DskipTests
+
+# 3. Deploy with Catalyst CLI
+catalyst deploy
+```
+
+Full guide: [docs/CATALYST_DEPLOYMENT.md](docs/CATALYST_DEPLOYMENT.md)
 
 ---
 
@@ -72,7 +97,8 @@ npm run dev
 ## Important Disclaimer
 
 This application is **intentionally vulnerable**.  
-Use only in controlled educational environments.
+Use only in controlled educational environments.  
+Do **not** leave a public Catalyst URL open permanently.
 
 ---
 
