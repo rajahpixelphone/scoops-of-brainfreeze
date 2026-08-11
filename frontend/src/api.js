@@ -1,6 +1,9 @@
 // Central API configuration
-// Change this single value if the backend runs on a different host/port
-export const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/api'
+// - Local development: talks to http://localhost:8080/api
+// - Embedded in Spring Boot / Catalyst: uses relative /api (same origin)
+export const API_BASE =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.DEV ? 'http://localhost:8080/api' : '/api')
 
 export async function apiGet(path) {
   const res = await fetch(`${API_BASE}${path}`)
